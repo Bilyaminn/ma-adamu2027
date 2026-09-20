@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0a1713">
+  <title>Programme Manager | Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="bar-brand" href="./">
+      <img src="../brand-avatar.jpg" alt="" width="40" height="40">
+      <span>Programme Manager<small>Rtd. IGP Muhammad Abubakar Adamu · Nasarawa 2027</small></span>
+    </a>
+    <div class="bar-right" id="barRight" hidden>
+      <a href="../#programmes" target="_blank" rel="noopener">View site</a>
+      <span class="who" id="who"></span>
+      <button type="button" class="link-btn" id="logout">Sign out</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Sign in -->
+    <section id="loginView" class="panel narrow" hidden>
+      <h1>Admin sign in</h1>
+      <p class="muted">Sign in with your admin email to add and manage works and empowerment programmes.</p>
+      <form id="loginForm" novalidate>
+        <label>Email<input id="loginUser" type="email" autocomplete="username" required></label>
+        <label>Password<input id="loginPass" type="password" autocomplete="current-password" required></label>
+        <p class="form-error" id="loginError" role="alert" hidden></p>
+        <button class="btn primary block" id="loginBtn" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <!-- List -->
+    <section id="listView" hidden>
+      <div class="page-head">
+        <div>
+          <h1>Works and programmes</h1>
+          <p class="muted" id="counts"></p>
+        </div>
+        <div class="head-actions">
+          <button type="button" class="btn ghost" id="backupBtn">Download backup</button>
+          <button type="button" class="btn primary" id="newBtn">+ New entry</button>
+        </div>
+      </div>
+      <div class="tabs" role="group" aria-label="Filter">
+        <button type="button" class="tab" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="tab" data-filter="published" aria-pressed="false">Published</button>
+        <button type="button" class="tab" data-filter="draft" aria-pressed="false">Drafts</button>
+      </div>
+      <div id="rows" class="rows"></div>
+      <p class="panel empty" id="emptyList" hidden>Nothing here yet. Add the first work or empowerment programme with the button above.</p>
+    </section>
+
+    <!-- Add / edit -->
+    <section id="formView" hidden>
+      <div class="page-head">
+        <div>
+          <button type="button" class="link-btn back" id="backBtn">← Back to list</button>
+          <h1 id="formTitle">New entry</h1>
+        </div>
+      </div>
+
+      <form id="progForm" class="panel form" novalidate>
+        <fieldset class="type-pick">
+          <legend>What is this?</legend>
+          <label class="pick"><input type="radio" name="type" value="work" checked><span><b>Work / project</b><small>Roads, schools, clinics, borehole, security support and similar.</small></span></label>
+          <label class="pick"><input type="radio" name="type" value="empowerment"><span><b>Empowerment programme</b><small>Training, grants, farm inputs, scholarships, start-up support.</small></span></label>
+        </fieldset>
+
+        <label class="full">Title
+          <input id="fTitle" maxlength="120" placeholder="e.g. Youth skills training in Akwanga" required>
+        </label>
+
+        <div class="grid2">
+          <label>LGA
+            <select id="fLga" required></select>
+          </label>
+          <label>Community / ward <span class="opt">optional</span>
+            <input id="fCommunity" maxlength="120" placeholder="e.g. Gudi">
+          </label>
+        </div>
+
+        <div class="grid3">
+          <label>Category <span class="opt">optional</span>
+            <select id="fCategory"></select>
+          </label>
+          <label>Date <span class="opt">optional</span>
+            <input id="fDate" type="date">
+          </label>
+          <label>Beneficiaries <span class="opt">optional</span>
+            <input id="fPeople" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 250">
+          </label>
+        </div>
+
+        <label class="full">Description
+          <textarea id="fDesc" rows="7" maxlength="4000" placeholder="What was done, where, and who benefited." required></textarea>
+          <span class="counter" id="descCount">0 / 4000</span>
+        </label>
+
+        <label class="full">Reference link <span class="opt">optional</span>
+          <input id="fSource" type="url" maxlength="300" placeholder="https:// news report or official page">
+        </label>
+
+        <div class="full">
+          <span class="label-text">Photos <span class="opt">first photo is the cover, up to 10</span></span>
+          <label class="drop" id="drop">
+            <input id="fFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+            <span><b>Choose photos</b> or drop them here</span>
+            <small>Photos are shrunk in your browser before upload.</small>
+          </label>
+          <ul class="photos" id="photos"></ul>
+        </div>
+
+        <fieldset class="status-pick">
+          <legend>Visibility</legend>
+          <label class="seg"><input type="radio" name="status" value="draft" checked><span>Draft</span></label>
+          <label class="seg"><input type="radio" name="status" value="published"><span>Published</span></label>
+          <p class="muted small">Drafts are only visible here. Published entries appear on the website straight away.</p>
+        </fieldset>
+
+        <p class="form-error" id="formError" role="alert" hidden></p>
+        <div class="progress" id="progress" hidden><i id="progressBar"></i></div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="saveBtn">Save</button>
+          <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="../config.js"></script>
+  <script src="../vendor/supabase.js"></script>
+  <script src="../site-data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
