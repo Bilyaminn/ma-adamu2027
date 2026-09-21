@@ -11,8 +11,8 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
   <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <script src="js-flag.js?v=20260921b"></script>
-  <link rel="stylesheet" href="styles.css?v=20260921b">
+  <script src="js-flag.js?v=20260921e"></script>
+  <link rel="stylesheet" href="styles.css?v=20260921e">
 </head>
 <body id="top">
   <header class="topbar">
@@ -24,7 +24,7 @@
       <button class="menu" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
       <nav>
         <a href="#timeline">History</a>
-        <a href="#programmes">Programmes</a>
+        <a href="#programmes">Projects</a>
         <a href="#studio">Poster</a>
       </nav>
     </div>
@@ -90,14 +90,14 @@
 
     <section id="programmes" class="section">
       <div class="container">
-        <div class="section-kicker reveal">02 / WORKS &amp; EMPOWERMENT</div>
+        <div class="section-kicker reveal">02 / PROJECTS &amp; EMPOWERMENT</div>
         <div class="section-head reveal">
-          <h2>Works and empowerment programmes across Nasarawa State</h2>
+          <h2>Projects &amp; Empowerment across Nasarawa State</h2>
           <p>Projects and empowerment programmes, community by community. Filter by type or LGA and open any entry to see the photos and details.</p>
         </div>
 
         <div class="prog-summary" id="progSummary" hidden>
-          <div><b data-count="0" id="sumTotal">0</b><span>Works and programmes</span></div>
+          <div><b data-count="0" id="sumTotal">0</b><span>Projects and programmes</span></div>
           <div><b data-count="0" id="sumLgas">0</b><span>LGAs reached, of 13</span></div>
           <div id="sumPeopleWrap"><b data-count="0" id="sumPeople">0</b><span>Beneficiaries</span></div>
         </div>
@@ -105,7 +105,7 @@
         <div class="prog-toolbar" id="progToolbar">
           <div class="chips" role="group" aria-label="Filter by type">
             <button type="button" class="chip" data-type="" aria-pressed="true">All</button>
-            <button type="button" class="chip" data-type="work" aria-pressed="false">Works</button>
+            <button type="button" class="chip" data-type="work" aria-pressed="false">Projects</button>
             <button type="button" class="chip" data-type="empowerment" aria-pressed="false">Empowerment</button>
           </div>
           <div class="prog-filters">
@@ -176,6 +176,7 @@
             <label for="supporterPhoto">Your photo<input id="supporterPhoto" type="file" accept="image/*"></label>
             <button id="downloadCard" class="btn primary full" type="button">Download poster</button>
             <p class="tiny">Your photo appears as a small circle on the poster. Use only photos you have permission to publish.</p>
+            <p class="poster-count" id="posterCount" hidden><b id="posterCountNum">0</b> <span id="posterCountLabel">posters downloaded so far</span></p>
           </div>
           <div class="canvas-shell reveal"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Campaign poster preview for Rtd. IGP Muhammad Abubakar Adamu, for Governor Nasarawa State 2027"></canvas></div>
         </div>
@@ -195,12 +196,13 @@
       </a>
     </div>
   </footer>
-  <script src="poster-assets.js?v=20260921b"></script>
-  <script src="script.js?v=20260921b"></script>
+  <script src="poster-assets.js?v=20260921e"></script>
+  <script src="script.js?v=20260921e"></script>
   <script src="config.js"></script>
   <script src="vendor/supabase.js?v=2116"></script>
-  <script src="site-data.js?v=20260921b"></script>
-  <script src="db.js?v=20260921b"></script>
-  <script src="programmes.js?v=20260921b"></script>
+  <script src="site-data.js?v=20260921e"></script>
+  <script src="db.js?v=20260921e"></script>
+  <script src="poster-counter.js?v=20260921e"></script>
+  <script src="programmes.js?v=20260921e"></script>
 </body>
 </html>

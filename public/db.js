@@ -4,11 +4,11 @@
 (() => {
   'use strict';
 
-  const cfg = window.SITE_CONFIG || {};
   const data = window.SITE_DATA || { LGAS: [], BUCKET: 'programme-photos' };
-  const url = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
-  const key = String(cfg.supabaseAnonKey || '');
-  const configured = /^https?:\/\//.test(url) && !/YOUR/i.test(url) && key && !/YOUR/i.test(key) && !!window.supabase;
+  const conf = data.readConfig ? data.readConfig() : { url: '', key: '', ok: false };
+  const url = conf.url;
+  const key = conf.key;
+  const configured = conf.ok && !!window.supabase;
 
   const client = configured
     ? window.supabase.createClient(url, key, {
@@ -82,5 +82,19 @@
     return result;
   }
 
-  window.SiteDB = { ready: !!client, list, summary, publicUrl, shape };
+  async function recordPosterDownload() {
+    if (!client) throw new Error('not-configured');
+    const { data: total, error } = await client.rpc('record_poster_download');
+    if (error) throw error;
+    return total;
+  }
+
+  async function posterDownloadCount() {
+    if (!client) throw new Error('not-configured');
+    const { data: total, error } = await client.rpc('poster_download_count');
+    if (error) throw error;
+    return total;
+  }
+
+  window.SiteDB = { ready: !!client, list, summary, publicUrl, shape, recordPosterDownload, posterDownloadCount };
 })();

@@ -35,7 +35,7 @@
 
   const PAGE = 6;
   const state = { type: '', lga: '', q: '', page: 1, total: 0, loading: false };
-  const TYPE_LABEL = { work: 'Work', empowerment: 'Empowerment' };
+  const TYPE_LABEL = { work: 'Project', empowerment: 'Empowerment' };
   const nf = new Intl.NumberFormat('en-NG');
   const lgaLabel = lga => (lga === 'Statewide' ? 'All 13 LGAs' : `${lga} LGA`);
   const placeOf = item => [item.community, lgaLabel(item.lga)].filter(Boolean).join(', ');
@@ -226,7 +226,7 @@
         countEl.hidden = true;
         showMessage(state.type || state.lga || state.q
           ? 'Nothing matches these filters yet. Try another type, LGA or search word.'
-          : 'Works and programmes are being added. Please check back soon.');
+          : 'Projects and programmes are being added. Please check back soon.');
       }
       renderPager();
     } catch (err) {
@@ -235,8 +235,8 @@
       countEl.hidden = true;
       pager.hidden = true;
       showMessage(err && err.message === 'not-configured'
-        ? 'The works and programmes are not connected yet. Fill in config.js with your Supabase details.'
-        : 'The works and programmes could not be loaded right now. Please refresh and try again.');
+        ? 'The projects and programmes are not connected yet. Fill in config.js with your Supabase details.'
+        : 'The projects and programmes could not be loaded right now. Please refresh and try again.');
     } finally {
       if (mine === requestId) {
         state.loading = false;

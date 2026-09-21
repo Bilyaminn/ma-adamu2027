@@ -409,6 +409,7 @@
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (window.PosterCounter) window.PosterCounter.record();
     }, 'image/png');
   });
 

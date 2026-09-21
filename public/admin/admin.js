@@ -3,14 +3,14 @@
 
   const $ = id => document.getElementById(id);
   const views = { login: $('loginView'), list: $('listView'), form: $('formView') };
-  const TYPE_LABEL = { work: 'Work', empowerment: 'Empowerment programme' };
+  const TYPE_LABEL = { work: 'Project', empowerment: 'Empowerment programme' };
 
-  const cfg = window.SITE_CONFIG || {};
   const DATA = window.SITE_DATA;
   const BUCKET = DATA.BUCKET;
-  const url = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
-  const key = String(cfg.supabaseAnonKey || '');
-  const configured = /^https?:\/\//.test(url) && !/YOUR/i.test(url) && key && !/YOUR/i.test(key) && !!window.supabase;
+  const conf = DATA.readConfig();
+  const url = conf.url;
+  const key = conf.key;
+  const configured = conf.ok && !!window.supabase;
 
   const sb = configured
     ? window.supabase.createClient(url, key, {
