@@ -8,6 +8,6 @@
    NEVER put the "service_role" / secret key in this file.
    --------------------------------------------------------------------- */
 window.SITE_CONFIG = {
-  supabaseUrl: 'https://YOUR-PROJECT-REF.supabase.co',
-  supabaseAnonKey: 'YOUR-ANON-OR-PUBLISHABLE-KEY'
+  supabaseUrl: 'https://tsurfyzfefvnekwnxkpj.supabase.co',
+  supabaseAnonKey: 'sb_publishable_wSeCEbqfh2BuKCa5K-5dTw_FAescYbp'
 };
