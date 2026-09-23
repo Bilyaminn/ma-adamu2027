@@ -82,19 +82,27 @@
     return result;
   }
 
-  async function recordPosterDownload() {
-    if (!client) throw new Error('not-configured');
-    const { data: total, error } = await client.rpc('record_poster_download');
-    if (error) throw error;
-    return total;
+  /* A raw fetch (not the Supabase client) so we can set keepalive: true.
+     Mobile browsers often navigate to the poster image right after the
+     download is triggered; a normal request started around the same time
+     can get cancelled by that navigation before it reaches the server.
+     A keepalive request is explicitly allowed to outlive the page that
+     started it, so the count still gets recorded. */
+  async function callRpc(name) {
+    if (!configured) throw new Error('not-configured');
+    const res = await fetch(`${url}/rest/v1/rpc/${name}`, {
+      method: 'POST',
+      keepalive: true,
+      headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    if (!res.ok) throw new Error(`${name} failed (${res.status})`);
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   }
 
-  async function posterDownloadCount() {
-    if (!client) throw new Error('not-configured');
-    const { data: total, error } = await client.rpc('poster_download_count');
-    if (error) throw error;
-    return total;
-  }
+  const recordPosterDownload = () => callRpc('record_poster_download');
+  const posterDownloadCount = () => callRpc('poster_download_count');
 
   window.SiteDB = { ready: !!client, list, summary, publicUrl, shape, recordPosterDownload, posterDownloadCount };
 })();
