@@ -11,9 +11,9 @@
 
   const setLabel = n => { labelEl.textContent = n === 1 ? 'poster downloaded so far' : 'posters downloaded so far'; };
 
-  function animateTo(target) {
+  function animateTo(target, instant) {
     const from = Number(numEl.textContent.replace(/,/g, '')) || 0;
-    if (reduce || target <= from) {
+    if (instant || reduce || target <= from) {
       numEl.textContent = nf.format(target);
       setLabel(target);
       return;
@@ -31,12 +31,24 @@
   }
 
   window.PosterCounter = {
-    /* Called once a poster download has actually started. */
+    /* Called once a poster download has actually started.
+       The number on screen is updated straight away, without waiting for
+       the server to answer: on a phone, downloading a poster often opens
+       or saves the image immediately, which can leave the page before the
+       network reply ever arrives back at this script. The count is still
+       recorded on the server either way (see db.js); this just makes sure
+       the visitor sees it move. If the reply does arrive while the page is
+       still open and someone else's download nudged the real total ahead
+       of the guess, the number is corrected up to match. */
     record() {
       if (!window.SiteDB || !window.SiteDB.ready) return;
+      const shown = Number(numEl.textContent.replace(/,/g, '')) || 0;
+      const guess = shown + 1;
+      wrap.hidden = false;
+      animateTo(guess, true);
       window.SiteDB.recordPosterDownload().then(total => {
-        if (typeof total === 'number') animateTo(total);
-      }).catch(() => { /* the download already happened; a missed count is not worth bothering the visitor about */ });
+        if (typeof total === 'number' && total > guess) animateTo(total);
+      }).catch(() => { /* the download already happened; a missed reconcile is not worth bothering the visitor about */ });
     }
   };
 

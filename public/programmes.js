@@ -84,6 +84,21 @@
       opt.value = l.lga;
       lgaSelect.appendChild(opt);
     });
+
+    /* Same numbers, shown as a one-line strip under the hero. */
+    const strip = document.getElementById('impactStrip');
+    if (strip) {
+      strip.hidden = false;
+      document.getElementById('stripPeopleWrap').hidden = !s.beneficiaries;
+      document.getElementById('stripPeopleDot').hidden = !s.beneficiaries;
+      const stripTargets = [
+        [document.getElementById('stripTotal'), s.total],
+        [document.getElementById('stripLgas'), s.lgasReached],
+        [document.getElementById('stripPeople'), s.beneficiaries]
+      ];
+      const runStrip = () => stripTargets.forEach(([node, value]) => countUp(node, value));
+      if (window.SiteMotion) window.SiteMotion.watch(strip, runStrip); else runStrip();
+    }
   }
 
   /* -------------------------------------------------------------- cards */

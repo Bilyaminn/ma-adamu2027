@@ -62,22 +62,6 @@
   onScroll();
 
   /* ------------------------------------------------------------------
-     Scrolling campaign banner: repeat the phrases until they cover the
-     screen, then duplicate the group so the loop is seamless.
-  ------------------------------------------------------------------ */
-  const track = document.querySelector('.ticker-track');
-  if (track) {
-    const group = track.querySelector('.ticker-group');
-    let guard = 0;
-    while (group.scrollWidth < window.innerWidth + 80 && guard++ < 6) {
-      Array.from(group.children).forEach(node => group.appendChild(node.cloneNode(true)));
-    }
-    const copy = group.cloneNode(true);
-    copy.setAttribute('aria-hidden', 'true');
-    track.appendChild(copy);
-  }
-
-  /* ------------------------------------------------------------------
      Scroll reveals. Elements marked .reveal fade in as they enter the
      screen. Once shown, the reveal classes are removed
      so hover effects stay snappy.
@@ -162,11 +146,21 @@
   const TAG_LINE_1 = 'for Governor';
   const TAG_LINE_2 = 'Nasarawa State 2027';
   const STAND_WITH = 'I Stand With';
-  const CREDIT = 'Crafted by Bilyaminu™';
 
   let candidateImg = null;
   let logoImg = null;
   let supporterImg = null;
+
+  /* Where the supporter's photo sits on the poster (see draw(), section 5).
+     Kept as constants so the drag-to-reposition handler can use them
+     without duplicating draw()'s layout math. */
+  const SUPPORTER_R = 76;
+  const SUPPORTER_CX = MARGIN + 14 + SUPPORTER_R;
+  const SUPPORTER_CY = 1194;
+
+  let supporterFX = 0.5;   // 0 = crop from the left,  1 = crop from the right
+  let supporterFY = 0.3;   // 0 = crop from the top,   1 = crop from the bottom
+  let supporterZoom = 1;
 
   const loadImage = src => new Promise((resolve, reject) => {
     const img = new Image();
@@ -176,12 +170,20 @@
   });
 
   /* Draw an image so it fills (x, y, w, h). fx / fy choose which part
-     of the overflow is kept: 0 = top/left, 1 = bottom/right. */
-  function cover(img, x, y, w, h, fx = 0.5, fy = 0.5) {
-    const r = Math.max(w / img.width, h / img.height);
+     of the overflow is kept: 0 = top/left, 1 = bottom/right. zoom (>=1)
+     enlarges the image beyond the minimum cover size, giving fx/fy more
+     room to pan around within. */
+  function cover(img, x, y, w, h, fx = 0.5, fy = 0.5, zoom = 1) {
+    const r = Math.max(w / img.width, h / img.height) * zoom;
     const nw = img.width * r;
     const nh = img.height * r;
     ctx.drawImage(img, x - (nw - w) * fx, y - (nh - h) * fy, nw, nh);
+  }
+
+  /* How far a photo can be panned at the given zoom, for a target size. */
+  function coverOverflow(img, size, zoom) {
+    const r = Math.max(size / img.width, size / img.height) * zoom;
+    return { ox: img.width * r - size, oy: img.height * r - size };
   }
 
   /* Shrink a font until the text fits maxW, then ellipsize as a last resort. */
@@ -283,7 +285,7 @@
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.clip();
     if (supporterImg) {
-      cover(supporterImg, cx - r, cy - r, r * 2, r * 2, 0.5, 0.3);
+      cover(supporterImg, cx - r, cy - r, r * 2, r * 2, supporterFX, supporterFY, supporterZoom);
     } else {
       // Placeholder silhouette until a photo is added.
       ctx.fillStyle = COLOR.mist;
@@ -345,9 +347,9 @@
     drawOfficeBar(MARGIN, 998, maxW, 88);
 
     // 5. Supporter: small round photo with name and community
-    const r = 76;
-    const cx = MARGIN + 14 + r;
-    const cy = 1194;
+    const r = SUPPORTER_R;
+    const cx = SUPPORTER_CX;
+    const cy = SUPPORTER_CY;
     drawSupporterPhoto(cx, cy, r);
 
     const textX = cx + r + 44;
@@ -362,39 +364,115 @@
     ctx.fillStyle = hasArea ? COLOR.muted : '#8A9A91';
     ctx.fillText(a.text, textX, cy + 38);
 
-    // 7. Footer bar with the designer's mark
-    const barH = 46;
+    // 7. Footer bar
+    const barH = 22;
     const barY = H - barH;
-    ctx.fillStyle = COLOR.deep;
-    ctx.fillRect(0, barY, W, barH);
     ctx.fillStyle = COLOR.green;
-    ctx.fillRect(0, barY, W * 0.72, 6);
+    ctx.fillRect(0, barY, W * 0.72, barH);
     ctx.fillStyle = COLOR.orange;
-    ctx.fillRect(W * 0.72, barY, W * 0.28, 6);
-    ctx.font = `600 19px ${BODY}`;
-    ctx.fillStyle = 'rgba(255,255,255,.92)';
-    ctx.textAlign = 'right';
-    ctx.fillText(CREDIT, W - MARGIN, barY + 33);
-    ctx.textAlign = 'left';
+    ctx.fillRect(W * 0.72, barY, W * 0.28, barH);
   }
 
   /* ---- Inputs ---- */
   [nameInput, areaInput].forEach(input => input.addEventListener('input', draw));
 
+  const photoAdjust = document.getElementById('photoAdjust');
+  const zoomSlider = document.getElementById('supporterZoom');
+  const removePhotoBtn = document.getElementById('removePhoto');
+
+  function resetSupporterPhoto() {
+    supporterImg = null;
+    supporterFX = 0.5;
+    supporterFY = 0.3;
+    supporterZoom = 1;
+    zoomSlider.value = '1';
+    photoAdjust.hidden = true;
+    photoInput.value = '';
+    canvas.style.cursor = 'default';
+  }
+
   photoInput.addEventListener('change', e => {
     const file = e.target.files && e.target.files[0];
     if (!file || !file.type.startsWith('image/')) {
-      supporterImg = null;
+      resetSupporterPhoto();
       draw();
       return;
     }
     const reader = new FileReader();
     reader.onload = () => loadImage(reader.result).then(img => {
       supporterImg = img;
+      // A fresh photo starts centred, un-zoomed and evenly framed, whatever
+      // the previous photo's adjustments were.
+      supporterFX = 0.5;
+      supporterFY = 0.3;
+      supporterZoom = 1;
+      zoomSlider.value = '1';
+      photoAdjust.hidden = false;
+      canvas.style.cursor = 'grab';
+      draw();
+    }).catch(() => {
+      resetSupporterPhoto();
       draw();
     });
     reader.readAsDataURL(file);
   });
+
+  removePhotoBtn.addEventListener('click', () => {
+    resetSupporterPhoto();
+    draw();
+  });
+
+  zoomSlider.addEventListener('input', () => {
+    supporterZoom = Number(zoomSlider.value) || 1;
+    draw();
+  });
+
+  /* ---- Drag the photo (mouse or touch) to reposition it within the circle ---- */
+  let dragPointerId = null;
+  let dragStart = { x: 0, y: 0, fx: 0.5, fy: 0.5 };
+  let dragFrame = null;
+
+  const canvasPoint = e => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (W / rect.width),
+      y: (e.clientY - rect.top) * (H / rect.height)
+    };
+  };
+
+  canvas.addEventListener('pointerdown', e => {
+    if (!supporterImg) return;
+    const p = canvasPoint(e);
+    const dist = Math.hypot(p.x - SUPPORTER_CX, p.y - SUPPORTER_CY);
+    if (dist > SUPPORTER_R) return;
+    dragPointerId = e.pointerId;
+    dragStart = { x: p.x, y: p.y, fx: supporterFX, fy: supporterFY };
+    canvas.setPointerCapture(dragPointerId);
+    canvas.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (dragPointerId === null || e.pointerId !== dragPointerId) return;
+    const p = canvasPoint(e);
+    const { ox, oy } = coverOverflow(supporterImg, SUPPORTER_R * 2, supporterZoom);
+    const dx = p.x - dragStart.x;
+    const dy = p.y - dragStart.y;
+    supporterFX = ox > 0 ? clamp01(dragStart.fx - dx / ox) : 0.5;
+    supporterFY = oy > 0 ? clamp01(dragStart.fy - dy / oy) : 0.5;
+    if (dragFrame == null) dragFrame = requestAnimationFrame(() => { dragFrame = null; draw(); });
+  });
+
+  const endDrag = e => {
+    if (dragPointerId === null || (e.pointerId !== undefined && e.pointerId !== dragPointerId)) return;
+    canvas.releasePointerCapture(dragPointerId);
+    dragPointerId = null;
+    canvas.style.cursor = supporterImg ? 'grab' : 'default';
+  };
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+
+  function clamp01(n) { return Math.min(1, Math.max(0, n)); }
 
   downloadBtn.addEventListener('click', () => {
     const slug = nameInput.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

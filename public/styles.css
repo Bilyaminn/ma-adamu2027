@@ -67,7 +67,6 @@ a{text-decoration:none;color:inherit}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes heroPhoto{from{opacity:0;transform:translateX(48px) scale(1.06)}to{opacity:1;transform:none}}
-@keyframes marquee{to{transform:translateX(-50%)}}
 
 .btn{border:0;border-radius:8px;padding:14px 22px;font:inherit;font-weight:700;cursor:pointer;display:inline-block;transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s,background-color .25s,border-color .25s}
 .btn:hover{transform:translateY(-3px)}
@@ -77,13 +76,12 @@ a{text-decoration:none;color:inherit}
 .ghost{border:1px solid #6e887d;color:#fff}
 .ghost:hover{background:rgba(255,255,255,.1);border-color:#fff}
 
-/* Ticker: scrolling campaign banner */
-.ticker{background:#d1aa58;color:#14211b;font-size:14px;font-weight:700;letter-spacing:.5px;overflow:hidden}
-.ticker-track{display:flex;width:max-content;animation:marquee 50s linear infinite}
-.ticker:hover .ticker-track{animation-play-state:paused}
-.ticker-group{display:flex;flex:none;padding:15px 0}
-.ticker-group span{display:flex;align-items:center;white-space:nowrap;padding:0 22px}
-.ticker-group span:after{content:"";width:6px;height:6px;margin-left:44px;border-radius:50%;background:#14211b}
+/* Impact strip: a live one-line summary of Projects & Empowerment data.
+   Hidden until real numbers exist (see programmes.js renderSummary). */
+.impact-strip{background:#d1aa58;color:#14211b}
+.impact-strip-inner{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:8px 16px;padding:16px 0;font-size:14px;font-weight:600;letter-spacing:.2px;text-align:center}
+.impact-strip-inner b{font-family:"Playfair Display",Georgia,serif;font-variant-numeric:lining-nums;font-size:17px;font-weight:700;margin-right:4px}
+.impact-strip .dot{opacity:.55}
 
 /* Sections */
 .section{padding:100px 0}
@@ -241,6 +239,14 @@ html.dlg-open{overflow:hidden}
 .studio-controls input{width:100%;padding:12px;margin-top:7px;border:1px solid #ccd5cf;border-radius:8px;font:inherit;font-weight:400;background:#fff}
 .full{width:100%}
 .tiny{font-size:11px!important;line-height:1.5!important;margin-bottom:0}
+.photo-adjust{margin-top:-6px}
+.photo-adjust-row{display:flex;align-items:center;gap:10px}
+.photo-adjust-row span{font-size:11px;font-weight:700;color:#3e4d46;flex:none}
+.photo-adjust-row input[type=range]{flex:1;accent-color:#0d2a1e;height:4px}
+.link-btn{background:none;border:0;padding:0;font:inherit;font-size:11px;font-weight:700;color:#0d2a1e;text-decoration:underline;text-underline-offset:2px;cursor:pointer;flex:none}
+.link-btn:hover{color:#9a762d}
+.canvas-shell canvas{touch-action:none}
+
 .poster-count{margin:14px 0 0;padding-top:14px;border-top:1px solid #e3e9e5;font-size:12px;color:#5e6c66;text-align:center}
 .poster-count b{display:inline;font-family:"Playfair Display",Georgia,serif;font-variant-numeric:lining-nums;font-size:20px;color:#0d2a1e;margin-right:5px}
 
@@ -251,7 +257,6 @@ html.dlg-open{overflow:hidden}
 .site-footer{background:#07120f;color:#91a39a;padding:34px 0;font-size:13px}
 .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
 .footer-text p{margin:0}
-.footer-text .credit{margin-top:6px;font-size:12px;color:#6f8379;letter-spacing:.3px}
 .to-top{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;border:1px solid rgba(209,170,88,.5);border-radius:999px;color:#d4b263;font-weight:700;font-size:13px;transition:background-color .25s,color .25s,border-color .25s,transform .25s}
 .to-top svg{transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
 .to-top:hover{background:#d1aa58;border-color:#d1aa58;color:#152019;transform:translateY(-2px)}
