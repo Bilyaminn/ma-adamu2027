@@ -1,4 +1,5 @@
+
 window.SITE_CONFIG = {
   supabaseUrl: 'https://tsurfyzfefvnekwnxkpj.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzdXJmeXpmZWZ2bmVrd254a3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzcxNDYsImV4cCI6MjEwNTUxMzE0Nn0.tBXE6tqot1ym5DMsLsqVbOlYZRHMxMzGLzUXEAxgfWY'
+  supabaseAnonKey: 'sb_publishable_wSeCEbqfh2BuKCa5K-5dTw_FAescYbp'
 };
